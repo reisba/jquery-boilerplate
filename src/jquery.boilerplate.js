@@ -27,7 +27,9 @@
 				this.settings = $.extend( {}, defaults, options );
 				this._defaults = defaults;
 				this._name = pluginName;
-				this.state = {};
+				this.state = {
+				    isLocked: false
+				};
 				this.init();
 		}
 
@@ -40,6 +42,33 @@
 						// you can add more functions like the one below and
 						// call them like so: this.yourOtherFunction(this.element, this.settings).
 						console.log("xD");
+				},
+				request: function(options, onSuccessCallback, onErrorCallback) {
+				    if (this.state.isLocked) {
+						return;
+					}
+					var self = this;
+					this.state.isLocked = true;
+					var defaults = {
+						type: 'GET',
+						cache: false,
+						dataType: 'json',
+						data: null
+					};
+					var args = $.extend(defaults, options);
+					args.success = function(data, textStatus, jqXHR){
+						self.state.isLocked = false;
+						if (typeof onSuccessCallback == 'function'){
+						    onSuccessCallback(data, textStatus, jqXHR);
+						}
+					}
+					args.error = function(jqXHR, textStatus, errorThrown){
+						self.state.isLocked = false;
+						if (typeof onErrorCallback == 'function'){
+						    onErrorCallback(jqXHR, textStatus, errorThrown);
+						}
+					}
+					$.ajax(args);
 				},
 				yourOtherFunction: function () {
 						// some logic
