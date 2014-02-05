@@ -27,6 +27,7 @@
 				this.settings = $.extend( {}, defaults, options );
 				this._defaults = defaults;
 				this._name = pluginName;
+				this.state = {};
 				this.init();
 		}
 
